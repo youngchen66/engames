@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>英語單字大富翁</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      background-color: #d0eaff;
+      border: 2px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      position: relative;
+    }
+    .player {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    #wordPrompt {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>英語單字大富翁</h1>
+  <div id="board"></div>
+  <div id="controls">
+    <button onclick="rollDice()">擲骰子</button>
+    <p>目前位置：<span id="position">0</span></p>
+    <p id="wordPrompt"></p>
+    <input type="text" id="answer" placeholder="輸入答案">
+    <button onclick="checkAnswer()">提交答案</button>
+    <p id="feedback"></p>
+  </div>
+  
+  <script>
+    const boardSize = 20;
+    const board = document.getElementById('board');
+    const wordPrompt = document.getElementById('wordPrompt');
+    const feedback = document.getElementById('feedback');
+    const words = [
+      { word: "apple", chinese: "蘋果" },
+      { word: "banana", chinese: "香蕉" },
+      { word: "cat", chinese: "貓" },
+      { word: "dog", chinese: "狗" },
+      { word: "egg", chinese: "蛋" },
+      { word: "fish", chinese: "魚" },
+      { word: "grape", chinese: "葡萄" },
+      { word: "hat", chinese: "帽子" },
+      { word: "ice", chinese: "冰" },
+      { word: "juice", chinese: "果汁" },
+      { word: "key", chinese: "鑰匙" },
+      { word: "lion", chinese: "獅子" },
+      { word: "moon", chinese: "月亮" },
+      { word: "nest", chinese: "巢" },
+      { word: "orange", chinese: "橘子" },
+      { word: "pig", chinese: "豬" },
+      { word: "queen", chinese: "女王" },
+      { word: "rain", chinese: "雨" },
+      { word: "sun", chinese: "太陽" },
+      { word: "tree", chinese: "樹" }
+    ];
+
+    let position = 0;
+    let currentWord = null;
+
+    // 初始化遊戲板
+    for (let i = 0; i < boardSize; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = i + 1;
+      board.appendChild(cell);
+    }
+    updatePlayer();
+
+    function updatePlayer() {
+      document.querySelectorAll('.player').forEach(p => p.remove());
+      const cells = document.querySelectorAll('.cell');
+      const player = document.createElement('div');
+      player.className = 'player';
+      cells[position].appendChild(player);
+      document.getElementById('position').textContent = position + 1;
+      generateWord();
+    }
+
+    function rollDice() {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      position += roll;
+      if (position >= boardSize) {
+        position = boardSize - 1;
+        alert("恭喜你完成遊戲！");
+      }
+      updatePlayer();
+      feedback.textContent = '';
+    }
+
+    function generateWord() {
+      currentWord = words[position];
+      wordPrompt.textContent = `請輸入英文：${currentWord.chinese}`;
+      document.getElementById('answer').value = '';
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById('answer').value.trim().toLowerCase();
+      if (input === currentWord.word) {
+        feedback.textContent = "✅ 答對了！";
+        feedback.style.color = 'green';
+      } else {
+        feedback.textContent = `❌ 錯誤！正確答案是 ${currentWord.word}`;
+        feedback.style.color = 'red';
+      }
+    }
+  </script>
+</body>
+</html>
