@@ -2,185 +2,150 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>英語單字大富翁</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>你在朋友眼中是哪個星座？</title>
   <style>
-    body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(to bottom, #ffeaa7, #fab1a0);
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      margin-bottom: 10px;
-      font-size: 32px;
-      color: #2d3436;
-      text-shadow: 1px 1px #fff;
-    }
-    #board {
-      display: grid;
-      grid-template-columns: repeat(5, 80px);
-      grid-gap: 5px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .cell {
-      width: 80px;
-      height: 80px;
-      background-color: #81ecec;
-      border: 2px solid #2d3436;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 14px;
-      border-radius: 10px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .player {
-      width: 24px;
-      height: 24px;
-      background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135768.png');
-      background-size: cover;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-    }
-    #controls {
-      margin-top: 20px;
-    }
-    #wordPrompt {
-      margin-top: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    #feedback {
-      font-size: 18px;
-      margin-top: 10px;
-    }
-    #stars {
-      font-size: 24px;
-      color: gold;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f9f9ff; padding: 20px; }
+    .quiz-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; }
+    .question { margin-top: 20px; }
+    .answers { margin-top: 10px; }
+    .answers button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; background: #f0f0ff; }
+    .result { margin-top: 30px; text-align: center; font-size: 18px; }
   </style>
 </head>
 <body>
-  <h1>🎉 英語單字大富翁 🎉</h1>
-  <div id="board"></div>
-  <div id="controls">
-    <button onclick="rollDice()">🎲 擲骰子</button>
-    <p>目前位置：<span id="position">0</span></p>
-    <p id="wordPrompt"></p>
-    <input type="text" id="answer" placeholder="輸入英文單字">
-    <button onclick="checkAnswer()">✅ 提交答案</button>
-    <p id="feedback"></p>
-    <p id="stars"></p>
-  </div>
+<div class="quiz-container">
+  <h1>你在朋友眼中是哪個星座？</h1>
+  <div id="quiz"></div>
+  <div class="result" id="result"></div>
+</div>
 
-  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
-  <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+<script>
+const questions = [
+  {
+    text: "當朋友遇到煩惱時，你會？",
+    options: [
+      { text: "耐心傾聽並給建議", stars: ["處女座", "巨蟹座"] },
+      { text: "開玩笑讓氣氛輕鬆", stars: ["雙子座", "射手座"] },
+      { text: "陪伴但不多話", stars: ["天蠍座", "摩羯座"] },
+      { text: "幫忙安排解決方法", stars: ["金牛座", "天秤座"] }
+    ]
+  },
+  {
+    text: "你最在意朋友之間的？",
+    options: [
+      { text: "誠信與互相信任", stars: ["金牛座", "天蠍座"] },
+      { text: "是否能玩得開心", stars: ["獅子座", "雙子座"] },
+      { text: "是否願意聆聽與陪伴", stars: ["巨蟹座", "雙魚座"] },
+      { text: "是否重視你並願意付出", stars: ["處女座", "摩羯座"] }
+    ]
+  },
+  {
+    text: "你在團體中的角色最像？",
+    options: [
+      { text: "組織規劃大師", stars: ["處女座", "摩羯座"] },
+      { text: "氣氛創造者", stars: ["射手座", "雙子座"] },
+      { text: "默默照顧大家的人", stars: ["巨蟹座", "金牛座"] },
+      { text: "意見領袖或決策者", stars: ["獅子座", "天秤座"] }
+    ]
+  },
+  {
+    text: "朋友之間產生衝突時，你會？",
+    options: [
+      { text: "幫忙調停並解決問題", stars: ["天秤座", "金牛座"] },
+      { text: "試圖化解尷尬的氣氛", stars: ["雙子座", "雙魚座"] },
+      { text: "保持中立並避免涉入", stars: ["處女座", "摩羯座"] },
+      { text: "堅守立場表明自己善意", stars: ["天蠍座", "獅子座"] }
+    ]
+  },
+  {
+    text: "你認為好的朋友應該？",
+    options: [
+      { text: "互相扶持與成長", stars: ["摩羯座", "巨蟹座"] },
+      { text: "值得信賴且能保守祕密", stars: ["天蠍座", "金牛座"] },
+      { text: "尊重彼此的意見和空間", stars: ["天秤座", "水瓶座"] },
+      { text: "願守立場表現自己", stars: ["獅子座", "射手座"] }
+    ]
+  },
+  {
+    text: "朋友聚會時你喜歡做什麼？",
+    options: [
+      { text: "安排活動讓大家開心", stars: ["獅子座", "射手座"] },
+      { text: "分享自己的生活近況", stars: ["雙魚座", "水瓶座"] },
+      { text: "一邊聊天一邊逗笑他人", stars: ["雙子座", "天秤座"] },
+      { text: "自在玩耍並觀察他人", stars: ["處女座", "天蠍座"] }
+    ]
+  },
+  {
+    text: "朋友之間你最在意？",
+    options: [
+      { text: "是否有責任感", stars: ["摩羯座", "金牛座"] },
+      { text: "是否善於溝通", stars: ["雙子座", "天秤座"] },
+      { text: "是否有趣、能帶來快樂", stars: ["射手座", "獅子座"] },
+      { text: "是否敏感體貼", stars: ["巨蟹座", "雙魚座"] }
+    ]
+  },
+  {
+    text: "當朋友服中，你可能是？",
+    options: [
+      { text: "忠誠顧家的類型", stars: ["巨蟹座", "金牛座"] },
+      { text: "行動力與負責型", stars: ["摩羯座", "處女座"] },
+      { text: "幽默風趣的快樂源泉", stars: ["雙子座", "射手座"] },
+      { text: "安靜但值得信賴的", stars: ["天蠍座", "水瓶座"] }
+    ]
+  }
+];
 
-  <script>
-    const boardSize = 20;
-    const board = document.getElementById('board');
-    const wordPrompt = document.getElementById('wordPrompt');
-    const feedback = document.getElementById('feedback');
-    const stars = document.getElementById('stars');
-    const correctSound = document.getElementById('correctSound');
-    const wrongSound = document.getElementById('wrongSound');
+let currentQuestion = 0;
+let scores = {};
 
-    const words = [
-      { word: "apple", chinese: "蘋果" },
-      { word: "banana", chinese: "香蕉" },
-      { word: "cat", chinese: "貓" },
-      { word: "dog", chinese: "狗" },
-      { word: "egg", chinese: "蛋" },
-      { word: "fish", chinese: "魚" },
-      { word: "grape", chinese: "葡萄" },
-      { word: "hat", chinese: "帽子" },
-      { word: "ice", chinese: "冰" },
-      { word: "juice", chinese: "果汁" },
-      { word: "key", chinese: "鑰匙" },
-      { word: "lion", chinese: "獅子" },
-      { word: "moon", chinese: "月亮" },
-      { word: "nest", chinese: "巢" },
-      { word: "orange", chinese: "橘子" },
-      { word: "pig", chinese: "豬" },
-      { word: "queen", chinese: "女王" },
-      { word: "rain", chinese: "雨" },
-      { word: "sun", chinese: "太陽" },
-      { word: "tree", chinese: "樹" }
-    ];
+function showQuestion() {
+  const quiz = document.getElementById('quiz');
+  quiz.innerHTML = '';
+  const q = questions[currentQuestion];
+  const qElem = document.createElement('div');
+  qElem.className = 'question';
+  qElem.innerHTML = `<h3>${q.text}</h3>`;
 
-    let position = 0;
-    let correctCount = 0;
-    let currentWord = null;
+  const answersElem = document.createElement('div');
+  answersElem.className = 'answers';
+  q.options.forEach((opt, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt.text;
+    btn.onclick = () => selectAnswer(opt.stars);
+    answersElem.appendChild(btn);
+  });
 
-    for (let i = 0; i < boardSize; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.textContent = i + 1;
-      board.appendChild(cell);
-    }
-    updatePlayer();
+  quiz.appendChild(qElem);
+  quiz.appendChild(answersElem);
+}
 
-    function updatePlayer() {
-      document.querySelectorAll('.player').forEach(p => p.remove());
-      const cells = document.querySelectorAll('.cell');
-      const player = document.createElement('div');
-      player.className = 'player';
-      cells[position].appendChild(player);
-      document.getElementById('position').textContent = position + 1;
-      generateWord();
-    }
+function selectAnswer(stars) {
+  stars.forEach(star => {
+    if (!scores[star]) scores[star] = 0;
+    scores[star]++;
+  });
 
-    function rollDice() {
-      const roll = Math.floor(Math.random() * 6) + 1;
-      position += roll;
-      if (position >= boardSize) {
-        position = boardSize - 1;
-        alert("🎉 恭喜你完成遊戲！總共答對了 " + correctCount + " 題！");
-      }
-      updatePlayer();
-      feedback.textContent = '';
-    }
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
 
-    function generateWord() {
-      currentWord = words[position];
-      wordPrompt.textContent = `請輸入英文：${currentWord.chinese}`;
-      document.getElementById('answer').value = '';
-    }
+function showResult() {
+  const resultElem = document.getElementById('result');
+  const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+  const topStar = sorted[0][0];
+  resultElem.innerHTML = `你最像的星座是：<strong>${topStar}</strong>！`;
+  document.getElementById('quiz').innerHTML = '';
+}
 
-    function checkAnswer() {
-      const input = document.getElementById('answer').value.trim().toLowerCase();
-      if (input === currentWord.word) {
-        correctSound.play();
-        feedback.textContent = "✅ 答對了！";
-        feedback.style.color = 'green';
-        correctCount++;
-        updateStars();
-        speakWord(currentWord.word);
-      } else {
-        wrongSound.play();
-        feedback.textContent = `❌ 錯誤！正確答案是 ${currentWord.word}`;
-        feedback.style.color = 'red';
-      }
-    }
-
-    function updateStars() {
-      stars.innerHTML = '⭐'.repeat(correctCount);
-    }
-
-    function speakWord(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      speechSynthesis.speak(utterance);
-    }
-  </script>
+showQuestion();
+</script>
 </body>
 </html>
 
-
-   
   
