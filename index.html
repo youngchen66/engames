@@ -5,13 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>你在朋友眼中是哪個星座？</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f9f9ff; padding: 20px; }
-    .quiz-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h1 { text-align: center; }
+    body { font-family: Arial, sans-serif; background-color: #f9f9ff; padding: 10px; margin: 0; }
+    .quiz-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); box-sizing: border-box; }
+    h1 { text-align: center; font-size: 22px; }
     .question { margin-top: 20px; }
     .answers { margin-top: 10px; }
-    .answers button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; background: #f0f0ff; }
-    .result { margin-top: 30px; text-align: center; font-size: 18px; }
+    .answers button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f0f0ff;
+      transition: background-color 0.3s;
+    }
+    .answers button:hover {
+      background-color: #e0e0ff;
+    }
+    .result {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+    @media screen and (max-width: 480px) {
+      .quiz-container { padding: 16px; }
+      .answers button { font-size: 15px; padding: 10px; }
+      h1 { font-size: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -148,4 +171,3 @@ showQuestion();
 </body>
 </html>
 
-  
