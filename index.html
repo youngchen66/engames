@@ -5,14 +5,17 @@
   <title>英語單字大富翁</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #f5f5f5;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to bottom, #ffeaa7, #fab1a0);
       text-align: center;
       margin: 0;
       padding: 20px;
     }
     h1 {
       margin-bottom: 10px;
+      font-size: 32px;
+      color: #2d3436;
+      text-shadow: 1px 1px #fff;
     }
     #board {
       display: grid;
@@ -24,18 +27,21 @@
     .cell {
       width: 80px;
       height: 80px;
-      background-color: #d0eaff;
-      border: 2px solid #333;
+      background-color: #81ecec;
+      border: 2px solid #2d3436;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 14px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
       position: relative;
     }
     .player {
-      width: 20px;
-      height: 20px;
-      background-color: red;
+      width: 24px;
+      height: 24px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135768.png');
+      background-size: cover;
       border-radius: 50%;
       position: absolute;
       bottom: 5px;
@@ -46,28 +52,44 @@
     }
     #wordPrompt {
       margin-top: 15px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
+    }
+    #feedback {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    #stars {
+      font-size: 24px;
+      color: gold;
     }
   </style>
 </head>
 <body>
-  <h1>英語單字大富翁</h1>
+  <h1>🎉 英語單字大富翁 🎉</h1>
   <div id="board"></div>
   <div id="controls">
-    <button onclick="rollDice()">擲骰子</button>
+    <button onclick="rollDice()">🎲 擲骰子</button>
     <p>目前位置：<span id="position">0</span></p>
     <p id="wordPrompt"></p>
-    <input type="text" id="answer" placeholder="輸入答案">
-    <button onclick="checkAnswer()">提交答案</button>
+    <input type="text" id="answer" placeholder="輸入英文單字">
+    <button onclick="checkAnswer()">✅ 提交答案</button>
     <p id="feedback"></p>
+    <p id="stars"></p>
   </div>
-  
+
+  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
   <script>
     const boardSize = 20;
     const board = document.getElementById('board');
     const wordPrompt = document.getElementById('wordPrompt');
     const feedback = document.getElementById('feedback');
+    const stars = document.getElementById('stars');
+    const correctSound = document.getElementById('correctSound');
+    const wrongSound = document.getElementById('wrongSound');
+
     const words = [
       { word: "apple", chinese: "蘋果" },
       { word: "banana", chinese: "香蕉" },
@@ -92,9 +114,9 @@
     ];
 
     let position = 0;
+    let correctCount = 0;
     let currentWord = null;
 
-    // 初始化遊戲板
     for (let i = 0; i < boardSize; i++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
@@ -118,7 +140,7 @@
       position += roll;
       if (position >= boardSize) {
         position = boardSize - 1;
-        alert("恭喜你完成遊戲！");
+        alert("🎉 恭喜你完成遊戲！總共答對了 " + correctCount + " 題！");
       }
       updatePlayer();
       feedback.textContent = '';
@@ -133,13 +155,32 @@
     function checkAnswer() {
       const input = document.getElementById('answer').value.trim().toLowerCase();
       if (input === currentWord.word) {
+        correctSound.play();
         feedback.textContent = "✅ 答對了！";
         feedback.style.color = 'green';
+        correctCount++;
+        updateStars();
+        speakWord(currentWord.word);
       } else {
+        wrongSound.play();
         feedback.textContent = `❌ 錯誤！正確答案是 ${currentWord.word}`;
         feedback.style.color = 'red';
       }
     }
+
+    function updateStars() {
+      stars.innerHTML = '⭐'.repeat(correctCount);
+    }
+
+    function speakWord(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      speechSynthesis.speak(utterance);
+    }
   </script>
 </body>
 </html>
+
+
+   
+  
